@@ -3,6 +3,10 @@ from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from ursina.shaders import lit_with_shadows_shader
 
+
+player = Entity 
+player.model = 'cube'
+
 class physical_object:
     def __init__(self, model, collider , scale, texture, texture_scale):
         self.model = model
@@ -36,7 +40,7 @@ def length(vec):
     pass
 
 class enemyrun(Entity):
-    def __init__(self):
+    def __init__(self, target):
         super().__init__()
 
         self.health = 10
@@ -44,10 +48,10 @@ class enemyrun(Entity):
         self.color = color.red
         self.model = 'cube'
         self.position = Vec3(random.randint(5, 10), 0, random.randint(5, 10)) 
-        self.target = Vec3(0, 0, 0)
+        self.target = target
 
     def update(self):
-        mouvment = self.target - self.position 
+        mouvment = self.target.position - self.position 
         self.position = self.position + mouvment * self.speed * time.dt
         
 # List to keep track of enemies
@@ -55,7 +59,7 @@ enemylist = []
 
 def spawn_enemy():
     # Create and add a new enemy to the list
-    e = enemyrun()
+    e = enemyrun(player)
     enemylist.append(e)
 
 def update():
