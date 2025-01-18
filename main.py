@@ -8,7 +8,29 @@ from ursina.shaders import lit_with_shadows_shader
 from ursina.prefabs.health_bar import HealthBar
 from entities import *
 
+
+
+
 app = Ursina()
+
+class projectile(entities):
+    def __init__(self, creator):
+        super.__init__(self)
+        self.creator = creator
+        pass
+
+    # def start_existing():
+    #     pass
+    def stop_existing(self):
+        if self.intersects():
+            for e in entities: 
+                if e.class = Enemy:
+                    e.hp -= 1
+            destroy(self)
+        pass
+
+    def movement_direction():
+        pass
 
 random.seed(0)
 Entity.default_shader = lit_with_shadows_shader
@@ -47,15 +69,13 @@ def shoot():
         ursfx([(0.0, 0.0), (0.1, 0.9), (0.15, 0.75), (0.3, 0.14), (0.6, 0.0)], volume=0.5, wave='noise', pitch=random.uniform(-13,-12), pitch_change=-12, speed=3.0)
         invoke(shotgun.muzzle_flash.disable, delay=.05)
         invoke(setattr, shotgun, 'on_cooldown', False, delay=.15)
-        if mouse.hovered_entity and hasattr(mouse.hovered_entity, 'hp'):
-            mouse.hovered_entity.hp -= 1
-            mouse.hovered_entity.blink(color.red)
+        if :
 
 class Enemy(Entity):
     def __init__(self, **kwargs):
         super().__init__(parent=shootables_parent, model='cube', scale_y=2, origin_y=-.5, color=color.light_gray, collider='box', **kwargs)
         self.health_bar = Entity(parent=self, y=1.2, model='cube', color=color.red, world_scale=(1.5,.1,.1))
-        self.max_hp = 1
+        self.max_hp = 5
         self.hp = self.max_hp
 
     def update(self):
