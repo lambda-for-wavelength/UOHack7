@@ -1,39 +1,36 @@
 #This is the web page
 
-import ursina
-import entities
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
-from ursina.shaders import lit_with_shadows_shader
+# from ursina.shaders import lit_with_shadows_shader
 from ursina.prefabs.health_bar import HealthBar
-from entities import *
-
-
-
+# from entities import *
 
 app = Ursina()
 
-class projectile(entities):
+window.size = (800,600)
+class projectile(Entity):
     def __init__(self, creator):
-        super.__init__(self)
+        super().__init__()
         self.creator = creator
         pass
 
     # def start_existing():
     #     pass
-    def stop_existing(self):
-        if self.intersects():
-            for e in entities: 
-                if e.class = Enemy:
-                    e.hp -= 1
-            destroy(self)
-        pass
+    # def stop_existing(self):
+    #     if self.intersects():
+    #         for e in entities: 
+    #             if e.class = Enemy:
+    #                 e.hp -= 1
+    #         destroy(self)
+    #     pass
 
-    def movement_direction():
-        pass
+    # def movement_direction():
+    #     pass
 
 random.seed(0)
-Entity.default_shader = lit_with_shadows_shader
+# Entity.default_shader = lit_with_shadows_s
+# hader
 
 ground = Entity(model = 'plane', collider='box', scale = 64, texture = 'grass', texture_scale = (4,4))
 
@@ -56,20 +53,41 @@ for i in range(16):
         color=color.hsv(0, 0, random.uniform(.9, 1))
         )
     
+def spawn_enemy():
+    # Create and add a new enemy to the list
+    e = enemyrun(player)
+    enemylist.append(e)
+
 def update():
     if held_keys['left mouse']:
         shoot()
+    global spawn_timer
+
+    # # Update the spawn timer
+    # spawn_timer += time.dt
+
+    # # Check if the timer exceeds the spawn interval
+    # if spawn_timer >= spawn_interval:
+    #     spawn_enemy()  # Spawn a new enemy
+    #     spawn_timer = 0  # Reset the timer
+
+    # # Update all enemies in the enemy list
+    # for enemy in enemylist:
+    #     if hasattr(enemy, 'update'):
+    #         enemy.update()
+
 
 def shoot():
     if not shotgun.on_cooldown:
-        # print('shoot')
+        print('shoot')
         shotgun.on_cooldown = True
         shotgun.muzzle_flash.enabled=True
         from ursina.prefabs.ursfx import ursfx
+        for i in range(8):
+            bullet = projectile(model='cube', creator = player, collider='box', scale = 1, color=color.gray, speed = 100, )
         ursfx([(0.0, 0.0), (0.1, 0.9), (0.15, 0.75), (0.3, 0.14), (0.6, 0.0)], volume=0.5, wave='noise', pitch=random.uniform(-13,-12), pitch_change=-12, speed=3.0)
         invoke(shotgun.muzzle_flash.disable, delay=.05)
         invoke(setattr, shotgun, 'on_cooldown', False, delay=.15)
-        if :
 
 class Enemy(Entity):
     def __init__(self, **kwargs):

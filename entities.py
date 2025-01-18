@@ -1,4 +1,4 @@
-import ursina
+
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from ursina.shaders import lit_with_shadows_shader
@@ -17,12 +17,6 @@ class non_physical_Entity(Entity):
 
 class living_Entity(Entity):
     pass
-
-shotgun = non_physical_object(Entity(model='cube', parent=camera))
-shotgun.muzzle_flash = non_physical_object(Entity(parent = shotgun, color = color.yellow, enabled=False))
-
-
-
 
 ### ENEMIES
 spawn_interval = 5
@@ -46,26 +40,25 @@ class enemyrun(Entity):
         mouvment = self.target.position - self.position 
         self.position = self.position + mouvment * self.speed * time.dt
         
-# List to keep track of enemies
-enemylist = []        
+# List to keep track of enemies       
 
-def spawn_enemy():
-    # Create and add a new enemy to the list
-    e = enemyrun(player)
-    enemylist.append(e)
+# def spawn_enemy():
+#     # Create and add a new enemy to the list
+#     e = enemyrun(player)
+#     enemylist.append(e)
 
-def update():
-    global spawn_timer
+# def update():
+#     global spawn_timer
 
-    # Update the spawn timer
-    spawn_timer += time.dt
+#     # Update the spawn timer
+#     spawn_timer += time.dt
 
-    # Check if the timer exceeds the spawn interval
-    if spawn_timer >= spawn_interval:
-        spawn_enemy()  # Spawn a new enemy
-        spawn_timer = 0  # Reset the timer
+#     # Check if the timer exceeds the spawn interval
+#     if spawn_timer >= spawn_interval:
+#         spawn_enemy()  # Spawn a new enemy
+#         spawn_timer = 0  # Reset the timer
 
-    # Update all enemies in the enemy list
-    for enemy in enemylist:
-        if hasattr(enemy, 'update'):
-            enemy.update()
+#     # Update all enemies in the enemy list
+#     for enemy in enemylist:
+#         if hasattr(enemy, 'update'):
+#             enemy.update()
