@@ -2,7 +2,7 @@
 
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
-# from ursina.shaders import lit_with_shadows_shader
+from ursina.shaders import lit_with_shadows_shader
 from ursina.prefabs.health_bar import HealthBar
 # from entities import *
 
@@ -29,8 +29,7 @@ class projectile(Entity):
     #     pass
 
 random.seed(0)
-# Entity.default_shader = lit_with_shadows_s
-# hader
+Entity.default_shader = lit_with_shadows_shader
 
 ground = Entity(model = 'plane', collider='box', scale = 64, texture = 'grass', texture_scale = (4,4))
 
@@ -53,10 +52,10 @@ for i in range(16):
         color=color.hsv(0, 0, random.uniform(.9, 1))
         )
     
-def spawn_enemy():
-    # Create and add a new enemy to the list
-    e = enemyrun(player)
-    enemylist.append(e)
+# def spawn_enemy():
+#     # Create and add a new enemy to the list
+#     e = enemyrun(player)
+#     enemylist.append(e)
 
 def update():
     if held_keys['left mouse']:
@@ -83,8 +82,8 @@ def shoot():
         shotgun.on_cooldown = True
         shotgun.muzzle_flash.enabled=True
         from ursina.prefabs.ursfx import ursfx
-        for i in range(8):
-            bullet = projectile(model='cube', creator = player, collider='box', scale = 1, color=color.gray, speed = 100, )
+        # for i in range(8):
+        #     bullet = projectile(model='cube', creator = player, collider='box', scale = 1, color=color.gray, speed = 100, )
         ursfx([(0.0, 0.0), (0.1, 0.9), (0.15, 0.75), (0.3, 0.14), (0.6, 0.0)], volume=0.5, wave='noise', pitch=random.uniform(-13,-12), pitch_change=-12, speed=3.0)
         invoke(shotgun.muzzle_flash.disable, delay=.05)
         invoke(setattr, shotgun, 'on_cooldown', False, delay=.15)
