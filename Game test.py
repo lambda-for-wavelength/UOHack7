@@ -39,7 +39,7 @@ class Enemy(Entity):
 
     def update(self):
         dist = distance_xz(player.position, self.position)
-        if dist > 40:
+        if dist > 90:
             return
 
         self.look_at_2d(player.position, 'y')
@@ -65,7 +65,12 @@ player = FirstPersonController(model='property.obj', texture='property.jpg', z=-
 player.collider = BoxCollider(player, Vec3(0, 1, 0), Vec3(1, 2, 1))
 
 shotgun = Entity(model='trishotgun.obj', parent=camera, position=(0, -.3, .3), scale=(.2, .2, .2), origin_z=-.5, color=color.red, on_cooldown=False)
-shotgun.muzzle_flash = Entity(parent=shotgun, Animation='muzzleflash.gif')
+# shotgun.muzzle_flash = Entity(parent=shotgun, Animation='muzzleflash.gif')
+shotgun.muzzle_flash = Animation('muzzleflash.gif')
+shotgun.muzzle_flash.position = shotgun.position + Vec3(0.1,0.5,9)
+shotgun.muzzle_flash.scale = Vec3(2, 2, 2)
+shotgun.muzzle_flash.parent = shotgun
+
 
 shootables_parent = Entity()
 mouse.traverse_target = shootables_parent
