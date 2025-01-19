@@ -3,6 +3,7 @@ from ursina import Ursina, input_handler
 from ursina.prefabs.first_person_controller import FirstPersonController
 from ursina.shaders import lit_with_shadows_shader
 
+##################################### TEST
 app = Ursina(borderless=True)
 
 ammo_type = 1
