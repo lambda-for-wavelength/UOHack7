@@ -11,8 +11,8 @@ class Bullet(Entity):
         super().__init__(model='sphere', scale=0.05, color=color.black, collider='box', **kwargs)
         self.creator = creator
         self.direction = direction
-        self.speed = 200  # Adjusted speed
-        self.life_span = 2
+        self.speed = 400  # Adjusted speed
+        self.life_span = 10
         self.start_time = time.time()
 
     def update(self):
@@ -32,8 +32,8 @@ class Bullet(Entity):
 
 class Enemy(Entity):
     def __init__(self, **kwargs):
-        super().__init__(parent=shootables_parent, model='sphere', scale_y=2, origin_y=-.5, color=color.light_gray, collider='box', **kwargs)
-        self.health_bar = Entity(parent=self, y=1.2, model='cube', color=color.red, world_scale=(1.5, .1, .1))
+        super().__init__(parent=shootables_parent, scale=3,  model='guyofrah.obj', texture='eye-of-rah-12.jpg',  origin_y=-.5, color=color.light_gray, collider='box', **kwargs)
+        self.health_bar = Entity(parent=self, y=6, model='cube', color=color.red, world_scale=(1.5, .1, .1))
         self.max_hp = 5
         self.hp = self.max_hp
 
@@ -61,11 +61,11 @@ Entity.default_shader = lit_with_shadows_shader
 
 ground = Entity(model='plane', collider='box', scale=512, texture='grass', texture_scale=(4, 4))
 editor_camera = EditorCamera(enabled=False, ignore_paused=True)
-player = FirstPersonController(model='cube', z=-10, color=color.hsv(0,0,0,0), origin_y=-.2, speed=14, collider='box')
+player = FirstPersonController(model='property.obj', texture='property.jpg', z=-10, origin_y=-.2, speed=14, collider='box')
 player.collider = BoxCollider(player, Vec3(0, 1, 0), Vec3(1, 2, 1))
 
 shotgun = Entity(model='trishotgun.obj', parent=camera, position=(0, -.3, .3), scale=(.2, .2, .2), origin_z=-.5, color=color.red, on_cooldown=False)
-shotgun.muzzle_flash = Entity(parent=shotgun, z=1, world_scale=.5, model='quad', color=color.yellow, enabled=False)
+shotgun.muzzle_flash = Entity(parent=shotgun, Animation='muzzleflash.gif')
 
 shootables_parent = Entity()
 mouse.traverse_target = shootables_parent
@@ -79,7 +79,7 @@ def shoot():
         from ursina.prefabs.ursfx import ursfx
 
         # Create 8 bullets with a random spray pattern
-        for i in range(16):
+        for i in range(8):
             random_direction = Vec3(
                 player.forward.x + random.uniform(-0.1, 0.1),
                 player.forward.y + random.uniform(-0.05, 0.05),
@@ -92,9 +92,8 @@ def shoot():
             )
 
         # Add sound and visual effects
-        ursfx([(0.0, 0.0), (0.1, 0.9), (0.15, 0.75), (0.3, 0.14), (0.6, 0.0)],
-              volume=0.5, wave='noise', pitch=random.uniform(-13, -12), pitch_change=-12, speed=3.0)
-        invoke(shotgun.muzzle_flash.disable, delay=.05)
+        a = Audio('firesound.mp4', pitch=random.uniform(.8,1.2), loop=False)
+        invoke(shotgun.muzzle_flash.disable, delay=.9)
         invoke(setattr, shotgun, 'on_cooldown', False, delay=1)  # Set cooldown to 1 second
 
 def update():
@@ -116,5 +115,20 @@ pause_handler = Entity(ignore_paused=True, input=pause_input)
 sun = DirectionalLight()
 sun.look_at(Vec3(1, -1, -1))
 Sky()
+
+### ENEMIES ### 
+spawnInterval = 5
+spawnTimer = 0
+
+class enemies(Entity):
+    def __init__(self, target, health, speed, colour):
+        super().__init__()
+
+        self.health = health
+        self.speed = speed
+        self.colour = colour
+        self.model = 'guy of rah.obj'
+
+
 
 app.run()
