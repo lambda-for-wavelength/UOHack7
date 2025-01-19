@@ -105,7 +105,7 @@ shotgun.muzzle_flash.parent = shotgun
 shootables_parent = Entity()
 mouse.traverse_target = shootables_parent
 
-enemies = [Enemy(x=x * 4) for x in range(999)]
+enemies = [Enemy(x=x * 4) for x in range(120)]
 
 def shoot():
     global ammo_type
