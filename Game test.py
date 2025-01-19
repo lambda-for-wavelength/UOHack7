@@ -32,7 +32,7 @@ class Bullet(Entity):
 
 class Enemy(Entity):
     def __init__(self, **kwargs):
-        super().__init__(parent=shootables_parent, model='cube', scale_y=2, origin_y=-.5, color=color.light_gray, collider='box', **kwargs)
+        super().__init__(parent=shootables_parent, model='sphere', scale_y=2, origin_y=-.5, color=color.light_gray, collider='box', **kwargs)
         self.health_bar = Entity(parent=self, y=1.2, model='cube', color=color.red, world_scale=(1.5, .1, .1))
         self.max_hp = 5
         self.hp = self.max_hp
@@ -59,18 +59,18 @@ class Enemy(Entity):
 random.seed(0)
 Entity.default_shader = lit_with_shadows_shader
 
-ground = Entity(model='plane', collider='box', scale=64, texture='grass', texture_scale=(4, 4))
+ground = Entity(model='plane', collider='box', scale=512, texture='grass', texture_scale=(4, 4))
 editor_camera = EditorCamera(enabled=False, ignore_paused=True)
-player = FirstPersonController(model='cube', z=-10, color=color.orange, origin_y=-.5, speed=14, collider='box')
+player = FirstPersonController(model='cube', z=-10, color=color.hsv(0,0,0,0), origin_y=-.2, speed=14, collider='box')
 player.collider = BoxCollider(player, Vec3(0, 1, 0), Vec3(1, 2, 1))
 
-shotgun = Entity(model='cube', parent=camera, position=(.5, -.25, .25), scale=(.3, .2, 1), origin_z=-.5, color=color.red, on_cooldown=False)
+shotgun = Entity(model='trishotgun.obj', parent=camera, position=(0, -.3, .3), scale=(.2, .2, .2), origin_z=-.5, color=color.red, on_cooldown=False)
 shotgun.muzzle_flash = Entity(parent=shotgun, z=1, world_scale=.5, model='quad', color=color.yellow, enabled=False)
 
 shootables_parent = Entity()
 mouse.traverse_target = shootables_parent
 
-enemies = [Enemy(x=x * 4) for x in range(4)]
+enemies = [Enemy(x=x * 4) for x in range(30)]
 
 def shoot():
     if not shotgun.on_cooldown:
@@ -79,15 +79,15 @@ def shoot():
         from ursina.prefabs.ursfx import ursfx
 
         # Create 8 bullets with a random spray pattern
-        for i in range(20):
+        for i in range(16):
             random_direction = Vec3(
                 player.forward.x + random.uniform(-0.1, 0.1),
-                player.forward.y + random.uniform(-0.1, 0.1),
-                player.forward.z + random.uniform(-0.1, 0.1)
+                player.forward.y + random.uniform(-0.05, 0.05),
+                player.forward.z + random.uniform(-0.05, 0.05)
             ).normalized()
             Bullet(
                 creator=player,  # Pass the player as the creator
-                position=player.position + player.forward * 1.5,  # Spawn in front of the player
+                position=player.position + player.forward * .3,  # Spawn in front of the player
                 direction=random_direction
             )
 
