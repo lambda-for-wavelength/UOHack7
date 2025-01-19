@@ -130,20 +130,6 @@ def shoot():
                     position=spawn_position + Vec3(0, 0, 0) + forward_direction * 0.3,  # Spawn in front of the player
                     direction=forward_direction
                 )
-            
-        elif ammo_type == 3 :
-            Bullet(
-                    creator=player,  # Pass the player as the creator
-                    position=player.position + player.forward * .3,  # Spawn in front of the player
-                    direction=random_direction
-                )
-            
-        elif ammo_type == 4 :
-            Bullet(
-                    creator=player,  # Pass the player as the creator
-                    position=player.position + player.forward * .3,  # Spawn in front of the player
-                    direction=random_direction
-                )
 
         # Add sound and visual effects
         a = Audio('firesound.mp4', pitch=random.uniform(.8,1.2), loop=False)
@@ -160,9 +146,7 @@ def input(key):
     if key == 'change_ammo_type' and ammo_type < 4:
         ammo_type += 1
         print(ammo_type)
-    elif key == 'change_ammo_type' and ammo_type == 4:
-        ammo_type = 1
-        print(ammo_type)
+        if ammo_type >2: ammo_type = 1
         
 def pause_input(key):
     if key == 'tab':  # press tab to toggle edit/play mode
