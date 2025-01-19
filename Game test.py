@@ -1,10 +1,15 @@
 from ursina import *
+from ursina import Ursina, input_handler
 from ursina.prefabs.first_person_controller import FirstPersonController
 from ursina.shaders import lit_with_shadows_shader
 
 app = Ursina(borderless=True)
 
+ammo_type = 1
+
 application.target_fps = 120  # Increase the target FPS to 120
+
+input_handler.bind('f', 'change_ammo_type')
 
 class Bullet(Entity):
     def __init__(self, creator, direction, **kwargs):
@@ -12,6 +17,30 @@ class Bullet(Entity):
         self.creator = creator
         self.direction = direction
         self.speed = 400  # Adjusted speed
+        self.life_span = 10
+        self.start_time = time.time()
+        
+    def update(self):
+        step = self.direction * self.speed * time.dt
+        num_steps = 5  # Subdivide movement into smaller steps
+        for i in range(num_steps):
+            self.position += step / num_steps
+            hit_info = self.intersects()
+            if hit_info.hit:
+                if isinstance(hit_info.entity, Enemy):
+                    hit_info.entity.hp -= 1  # Decrease enemy health
+                    destroy(self)  # Destroy bullet upon hit
+                    return
+        # Destroy the bullet after its lifespan
+        if time.time() - self.start_time > self.life_span:
+            destroy(self)
+
+class Nail(Entity):
+    def __init__(self, creator, direction, **kwargs):
+        super().__init__(model='cube', scale=0.2, color=color.black, collider='box', **kwargs)
+        self.creator = creator
+        self.direction = direction
+        self.speed = 800  # Adjusted speed
         self.life_span = 10
         self.start_time = time.time()
 
@@ -23,8 +52,7 @@ class Bullet(Entity):
             hit_info = self.intersects()
             if hit_info.hit:
                 if isinstance(hit_info.entity, Enemy):
-                    hit_info.entity.hp -= 1  # Decrease enemy health
-                    destroy(self)  # Destroy bullet upon hit
+                    hit_info.entity.hp -= 5  # Decrease enemy health
                     return
         # Destroy the bullet after its lifespan
         if time.time() - self.start_time > self.life_span:
@@ -61,6 +89,7 @@ Entity.default_shader = lit_with_shadows_shader
 
 ground = Entity(model='plane', collider='box', scale=512, texture='grass', texture_scale=(4, 4))
 editor_camera = EditorCamera(enabled=False, ignore_paused=True)
+
 player = FirstPersonController(model='property.obj', texture='property.jpg', z=-10, origin_y=-.2, speed=14, collider='box')
 player.collider = BoxCollider(player, Vec3(0, 1, 0), Vec3(1, 2, 1))
 
@@ -78,23 +107,34 @@ mouse.traverse_target = shootables_parent
 enemies = [Enemy(x=x * 4) for x in range(30)]
 
 def shoot():
+    global ammo_type
     if not shotgun.on_cooldown:
         shotgun.on_cooldown = True
         shotgun.muzzle_flash.enabled = True
         from ursina.prefabs.ursfx import ursfx
+        
+        spawn_position = shotgun.world_position
+        forward_direction = shotgun.forward
 
         # Create 8 bullets with a random spray pattern
-        for i in range(8):
-            random_direction = Vec3(
-                player.forward.x + random.uniform(-0.1, 0.1),
-                player.forward.y + random.uniform(-0.05, 0.05),
-                player.forward.z + random.uniform(-0.05, 0.05)
-            ).normalized()
-            Bullet(
-                creator=player,  # Pass the player as the creator
-                position=player.position + player.forward * .3,  # Spawn in front of the player
-                direction=random_direction
-            )
+        if ammo_type == 1 :
+            for i in range(8):
+                random_direction = Vec3(
+                    forward_direction.x + random.uniform(-0.1, 0.1),
+                    forward_direction.y + random.uniform(-0.05, 0.05),
+                    forward_direction.z + random.uniform(-0.05, 0.05)
+                ).normalized()
+                Bullet(
+                    creator=player,  # Pass the player as the creator
+                    position=spawn_position + forward_direction * .3,  # Spawn in front of the player
+                    direction=random_direction
+                )
+        elif ammo_type == 2 :
+            Nail(
+                    creator=player,  # Pass the player as the creator
+                    position=spawn_position + Vec3(0, 0, 0) + forward_direction * 0.3,  # Spawn in front of the player
+                    direction=forward_direction
+                )
 
         # Add sound and visual effects
         a = Audio('firesound.mp4', pitch=random.uniform(.8,1.2), loop=False)
@@ -105,6 +145,14 @@ def update():
     if held_keys['left mouse']:
         shoot()
 
+def input(key):
+    global ammo_type  # Declare ammo_type as global
+    print('got key:', key)
+    if key == 'change_ammo_type' and ammo_type < 4:
+        ammo_type += 1
+        print(ammo_type)
+        if ammo_type >2: ammo_type = 1
+        
 def pause_input(key):
     if key == 'tab':  # press tab to toggle edit/play mode
         editor_camera.enabled = not editor_camera.enabled
@@ -133,7 +181,5 @@ class enemies(Entity):
         self.speed = speed
         self.colour = colour
         self.model = 'guy of rah.obj'
-
-
 
 app.run()
